@@ -3,7 +3,7 @@ setup(
         name='extheano',
         version="0.1.0",
         packages=find_packages(),
-        description="A small package to provide easy access to Theano, a scientific library for efficient computations",
+        description="A small package providing easy access to Theano, a scientific library for efficient computations",
         url="https://github.com/koheimiya/extheano",
         author="Kohei Miyaguchi",
         author_email="quote.curly@gmail.com",
