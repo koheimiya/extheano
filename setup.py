@@ -7,6 +7,7 @@ setup(
         url="https://github.com/koheimiya/extheano",
         author="Kohei Miyaguchi",
         author_email="quote.curly@gmail.com",
+        license='MIT License',
         classifiers=[
             'Intended Audience :: Developers',
             'Intended Audience :: Science/Research',
