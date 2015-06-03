@@ -13,3 +13,7 @@
 ### Who do I talk to? ###
 
 * Kohei Miyaguchi (quote.curly@gmail.com)
+
+### Copyright and License ###
+
+* This package is released under the MIT License, see LICENSE.txt.
