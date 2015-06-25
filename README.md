@@ -12,14 +12,21 @@
 ```python
 import extheano  
 import theano.tensor as T  
-f = extheano.jit( lambda x: T.sqrt((x ** 2).mean()) )  
-f([1., 2.]) # <-- implicit compilation here  
+
+# compute RMS
+def rms(arr):
+    return T.sqrt(T.mean(arr ** 2))
+
+f = extheano.jit(rms)  
+f([1., 2.]) # <-- Implicit compilation here
+# (Note: the type of the input is fixed to 1darray of float)  
 # -> array(1.5811388300841898)  
-f([3., 4., 5.]) # <-- pre-compiled function is used  
+  
+f([3., 4., 5.]) # <-- Pre-compiled function is used  
 # -> array(4.08248290463863)  
 ```
 
-* See tutorial\_test.py for the tutorial code.
+* See tutorial\_test.py for more.
 
 ### Who do I talk to? ###
 
