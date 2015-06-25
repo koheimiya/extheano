@@ -19,7 +19,7 @@ def rms(arr):
 
 f = extheano.jit(rms)  
 f([1., 2.]) # <-- Implicit compilation here
-# (Note: the type of the input is fixed to 1darray of float)  
+# (Note: the type of the input is fixed to 1darray of float on the first call)  
 # -> array(1.5811388300841898)  
   
 f([3., 4., 5.]) # <-- Pre-compiled function is used  
