@@ -25,7 +25,7 @@ f([1., 2.]) # <-- Implicit compilation here
 f([3., 4., 5.]) # <-- Pre-compiled function is used  
 # -> array(4.08248290463863)  
 ```  
-
+  
 * Of course you can employ shared variables, without any explicit 'update' instructions.  
 ```python
 import theano
@@ -35,12 +35,13 @@ def f(x):
     return (x - 10.) ** 2
 
 # initial guess
+# NodeBuffers wrap shared variables
 x0 = extheano.NodeBuffer(theano.shared(0., 'minimizer'))
 
 # one step of gradient decent method
 @extheano.jit
 def update_x0():
-    # access the current value of a shared variable through its attribute `val`
+    # access the current value of a NodeBuffer through its attribute `val`
     x0.val += 0.05 * T.grad(f(x0.val), x0.val)
 
 # iteratively updates `x0`
@@ -114,7 +115,7 @@ print 'After fit:', model.loglikelihood(data)
 mu, sigma = model.get_param()
 print 'MLE: mu=%s, sigma=%s' %(repr(mu), repr(sigma)) 
 ```
-
+  
 * See tutorial\_test.py to use `scan` or to parse arguments with extheano.
 
 ### Who do I talk to? ###
