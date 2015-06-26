@@ -122,7 +122,7 @@ print 'MLE: mu=%s, sigma=%s' %(repr(mu), repr(sigma))
 
 ### Who do I talk to? ###
 
-* Kohei Miyaguchi (quote.curly@gmail.com)
+* Kohei Miyaguchi (koheimiyaguchi at gmail)
 
 ### Copyright and License ###
 
