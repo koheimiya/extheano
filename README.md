@@ -44,14 +44,14 @@ x0 = extheano.NodeBuffer(theano.shared(0., 'minimizer'))
 @extheano.jit
 def update_x0():
     # access the current value of a NodeBuffer through its attribute `val`
-    x0.val += 0.05 * T.grad(f(x0.val), x0.val)
+    x0.val -= 0.05 * T.grad(f(x0.val), x0.val)
 
 # iteratively updates `x0`
 itermax = 100
 for i in xrange(itermax):
     update_x0()
 
-print x0.get_value()
+print x0.val.get_value() # roughly equal to 10.0
 ```
 
 * Consider adopting `NodeDescriptor` with OOP for more intuitive experience.  
@@ -118,7 +118,7 @@ mu, sigma = model.get_param()
 print 'MLE: mu=%s, sigma=%s' %(repr(mu), repr(sigma)) 
 ```
   
-* See tutorial\_test.py to use `scan` or to parse arguments with extheano.
+* See tutorial\_test.py for more.
 
 ### Who do I talk to? ###
 
