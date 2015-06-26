@@ -10,8 +10,8 @@
 
 * A tiny example here:  
 ```python
-import extheano  
 import theano.tensor as T  
+import extheano  
 
 # computes RMS
 @extheano.jit
@@ -29,6 +29,8 @@ f([3., 4., 5.]) # <-- Pre-compiled function is used
 * Of course you can employ shared variables, without any explicit 'update' instructions.  
 ```python
 import theano
+import theano.tensor as T
+import extheano
 
 # objective function to minimize
 def f(x):
