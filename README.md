@@ -68,7 +68,7 @@ class GaussianModel(object):
         of the multivariate Gaussian distribution.
     '''
 
-    # Each NodeDescriptor represent a single shared variable.
+    # Each NodeDescriptor represents a single shared variable.
     mu = extheano.NodeDescriptor()
     sigma = extheano.NodeDescriptor()
 
