@@ -80,10 +80,12 @@ class GaussianModel(object):
     @extheano.jit
     def loglikelihood(self, data):
         ''' Calculates the logarithm of the likelihood. '''
+	m = self.mu.shape[0]
         x = data - self.mu
         lam = Tnlinalg.matrix_inverse(self.sigma)
         det = Tnlinalg.det(self.sigma)
-        likelihoods = -0.5 * T.dot(x, T.dot(lam, x.T)) - 0.5 * T.log(2. * numpy.pi * det)
+        likelihoods = -0.5 * T.dot(x, T.dot(lam, x.T)) -\
+	              0.5 * m * T.log(2. * numpy.pi) - 0.5 * T.log(det)
         return T.sum(likelihoods)
 
     @extheano.jit
