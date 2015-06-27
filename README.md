@@ -92,7 +92,7 @@ class GaussianModel(object):
         n = data.shape[0]
         # Note: you can assign new values directly to NodeDescriptors
         self.mu = T.mean(data, axis=0)
-        self.sigma = (T.dot(data.T, data) - T.outer(self.mu, self.mu)) / n
+        self.sigma = T.dot(data.T, data) / n - T.outer(self.mu, self.mu)
 
     @extheano.jit
     def get_param(self):
