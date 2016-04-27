@@ -1,6 +1,7 @@
 '''Includes the tutorial code and the test case'''
 
-import unittest
+from sys import path
+path.insert(0, '.')
 
 import numpy as np
 import theano
@@ -9,7 +10,9 @@ from theano.tensor.shared_randomstreams import RandomStreams
 
 import extheano
 
+
 class AverageSGM(object):
+
     ''' A toy example showing the usage of `extheano.NodeDescriptor` and
     `extheano.jit`.
     This class performs the stochastic gradient method (SGM) to find the
@@ -26,12 +29,12 @@ class AverageSGM(object):
     # whole data of which we will compute the average
     data = extheano.NodeDescriptor()
     # estimate of the average
-    mu = extheano.NodeDescriptor() 
+    mu = extheano.NodeDescriptor()
     # learning rate (will be discounted as SGM goes on)
     lrate = extheano.NodeDescriptor()
 
     def __init__(self, data, batch_size=10, init_val=0., lrate=0.05,
-            degree=0.75, seed=None):
+                 degree=0.75, seed=None):
         '''Set parameters for the SGM
 
         :param data:        array-like with its dimension one
@@ -90,9 +93,9 @@ class AverageSGM(object):
         '''
         # assign a random batch to the input
         batch_start = self.batch_size * \
-                self.rng.random_integers(low=0, high=self.n_batches-1) 
+            self.rng.random_integers(low=0, high=self.n_batches - 1)
         batch_stop = batch_start + self.batch_size
-        minibatch = self.data[batch_start : batch_stop]
+        minibatch = self.data[batch_start: batch_stop]
 
         # perform SGM and discount the learning rate
         loss = self.quadratic_loss(minibatch)
@@ -111,55 +114,51 @@ class AverageSGM(object):
         return self.mu
 
 
-class exTheanoTest(unittest.TestCase):
-    '''Unit test for exTheano'''
-
-    def setUp(self):
-        pass
-
-    def test_function_wrapping(self):
-        func = extheano.jit(lambda a, b: a + b)
-        self.assertEqual(3, func(1, 2))
-
-    def test_function_decoration(self):
-        @extheano.jit
-        def func(a, b):
-            return a + b
-
-        self.assertEqual(3, func(1, 2))
-
-    def test_function_wrapping_kwargs(self):
-        func = extheano.jit.parse(lambda a, b=100: a + b)
-        self.assertEqual(101, func(1))
-        self.assertEqual(3, func(1, 2))
-        self.assertEqual(300, func(a=200))
-
-    def test_higher_dim_args(self):
-        func = extheano.jit(lambda a, b: a + b)
-        self.assertEqual(np.asarray([[3.]]).ndim, func([[1]], [2.]).ndim)
-
-    def test_recompile(self):
-        func = extheano.jit(lambda a, b: a + b)
-        self.assertEqual(3, func(1, 2))
-        func.recompile()
-        self.assertEqual(3, func(1, 2))
-
-    def test_member_method_decoration(self):
-        seq = np.arange(1000)
-        tol = 1e-3
-        n_iter = 10000
-        seed = 1234
-        a = AverageSGM(seq, seed=seed)
-        a.set_estimation(0.)
-        true_result = 485.960824876
-
-        for _ in xrange(n_iter): a.calc_loss_with_onestep_SGM(1.)
-
-        a.set_estimation.recompile()
-
-        gotten = a.get_estimation()
-        self.assertAlmostEqual(true_result, gotten, delta=tol)
+def test_function_wrapping():
+    func = extheano.jit(lambda a, b: a + b)
+    assert 3 == func(1, 2)
 
 
-if __name__ == '__main__':
-    unittest.main()
+def test_function_decoration():
+    @extheano.jit
+    def func(a, b):
+        return a + b
+
+    assert 3 == func(1, 2)
+
+
+def test_function_wrapping_kwargs():
+    func = extheano.jit.parse(lambda a, b=100: a + b)
+    assert 101 == func(1)
+    assert 3 == func(1, 2)
+    assert 300 == func(a=200)
+
+
+def test_higher_dim_args():
+    func = extheano.jit(lambda a, b: a + b)
+    assert np.asarray([[3.]]).ndim == func([[1]], [2.]).ndim
+
+
+def test_recompile():
+    func = extheano.jit(lambda a, b: a + b)
+    assert 3 == func(1, 2)
+    func.recompile()
+    assert 3 == func(1, 2)
+
+
+def test_member_method_decoration():
+    seq = np.arange(1000)
+    tol = 1e-3
+    n_iter = 10000
+    seed = 1234
+    a = AverageSGM(seq, seed=seed)
+    a.set_estimation(0.)
+    true_result = 485.960824876
+
+    for _ in range(n_iter):
+        a.calc_loss_with_onestep_SGM(1.)
+
+    a.set_estimation.recompile()
+
+    gotten = a.get_estimation()
+    assert (true_result - gotten).max() < tol

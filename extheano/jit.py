@@ -3,16 +3,17 @@
 import copy
 import inspect
 import functools
-import types
+# import types
 
 import numpy as np
 import theano
 import theano.tensor as T
 
-from nodebuffer import UpdateCollector
+from .nodebuffer import UpdateCollector
 
 
 class JITCompiler(object):
+
     '''Decorator for your theano-function
 
     You can call your theano-function without any explicit instructions to compile it. It takes a
@@ -29,21 +30,22 @@ class JITCompiler(object):
             array(4.08248290463863)
     '''
 
-    parse = None # parser will be assigned here
+    parse = None  # parser will be assigned here
 
     def __init__(self, func, owner=None):
         '''Initialize the members given the decorated function'''
         functools.update_wrapper(self, func)
         self.raw_func = func
-        self.owner = owner # owner of this instance
-        self.compiled_func = None # compiled function
+        self.owner = owner  # owner of this instance
+        self.compiled_func = None  # compiled function
 
     def __call__(self, *args):
         '''Call the compiled function after its compilation '''
         # compile the function
         if self.compiled_func is None:
             self.compiled_func = Compiler().compile_with_value(
-                                self.raw_func, args, self.owner)
+                self.raw_func, args, self.owner
+            )
 
         return self.compiled_func(*args)
 
@@ -70,8 +72,9 @@ class JITCompiler(object):
 
 
 class ParsingJITCompiler(JITCompiler):
+
     '''JITCompiler with a new feature: argument parsing
-    
+
     Now you can pass keyword arguments to the function
     '''
 
@@ -79,8 +82,8 @@ class ParsingJITCompiler(JITCompiler):
         '''Initialize the members given the decorated function'''
         functools.update_wrapper(self, func)
         self.rawinfo = FuncInfo(func)
-        self.owner = owner # owner of this instance
-        self.compiled_func = None # compiled function
+        self.owner = owner  # owner of this instance
+        self.compiled_func = None  # compiled function
 
         if owner is not None:
             self.rawinfo.remove_first_key()
@@ -90,11 +93,12 @@ class ParsingJITCompiler(JITCompiler):
         # parse the arguments with their keywords
         if self.rawinfo.has_default_arg():
             args = self.rawinfo.parse_args_kwargs(*args, **kwargs)
-        
+
         # compile the function
         if self.compiled_func is None:
             self.compiled_func = Compiler().compile_with_value(
-                    self.rawinfo.func, args, self.owner)
+                self.rawinfo.func, args, self.owner
+            )
 
         return self.compiled_func(*args)
 
@@ -117,11 +121,12 @@ class ParsingJITCompiler(JITCompiler):
 
 
 class FuncInfo(object):
+
     '''Container of a function and its information'''
 
     def __init__(self, func):
         self.func = func
-        self.arginfo = self._get_keys_defdict() # arguments info
+        self.arginfo = self._get_keys_defdict()  # arguments info
 
     def has_default_arg(self):
         '''If there are any arguments with default value or not'''
@@ -139,7 +144,7 @@ class FuncInfo(object):
         not_assigned = keys[len(args):]
 
         # validate kwargs
-        for key in kwargs: 
+        for key in kwargs:
             assert key not in assigned
             assert key in keys
 
@@ -169,6 +174,7 @@ class FuncInfo(object):
 
 
 class Compiler(object):
+
     '''Compile the theano-function/method just with its arguments and owner
     '''
 
@@ -178,11 +184,12 @@ class Compiler(object):
     def compile_with_value(self, func, args=None, owner=None):
         '''Compile the function with array-like objects'''
         # format args
-        if args is None: args = []
+        if args is None:
+            args = []
 
         # cast numpy.ndarray into theano.tensor
         theano_args = [self.cast2theano_var(a, 'extheano.jit.Compiler-arg-%d' % i)
-                       for a, i in zip(args, xrange(len(args)))]
+                       for a, i in zip(args, range(len(args)))]
 
         # compiled value with symbol
         return self.compile_with_symbol(func, theano_args, owner)
@@ -197,7 +204,7 @@ class Compiler(object):
 
         # get the output symbols and other Theano options
         theano_ret = func(*theano_args) if owner is None \
-                     else func(owner, *theano_args)
+            else func(owner, *theano_args)
 
         # integrate the information of updates, givens and the other options
         out = copy.copy(self.default_options)
